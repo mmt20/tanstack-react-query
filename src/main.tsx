@@ -9,6 +9,8 @@ import Home from "./pages/Home";
 
 import Info from "./pages/Info";
 import Create from "./pages/Create";
+import "./service/axios-golbal";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 const queryClient = new QueryClient();
 
@@ -35,6 +37,7 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById("root")!).render(
   <QueryClientProvider client={queryClient}>
+    <ReactQueryDevtools initialIsOpen={false} />
     <RouterProvider router={router} />
   </QueryClientProvider>
 );
