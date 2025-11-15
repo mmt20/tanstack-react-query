@@ -1,8 +1,14 @@
 import { Table, ButtonGroup, Button, Form } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import useGetPosts from "../hooks/useGetPosts";
-const PostList = () => {
-  const { data, isError, error, isLoading } = useGetPosts();
+import { TPostStatus } from "../types";
+
+interface PostListProps {
+  selectedPostStatus: TPostStatus;
+}
+
+const PostList = ({ selectedPostStatus }: PostListProps) => {
+  const { data, isError, error, isLoading } = useGetPosts(selectedPostStatus);
 
   if (isError) {
     return <div>Error: {(error as Error).message}</div>;
@@ -23,24 +29,6 @@ const PostList = () => {
         </tr>
       </thead>
       <tbody>
-        <tr>
-          <td>1</td>
-          <td>
-            <Link to="/info">lurem ipsum dollar asd sad </Link>
-          </td>
-          <td>Otto</td>
-          <td style={{ textAlign: "center" }}>
-            <Form.Check // prettier-ignore
-              type="switch"
-            />
-          </td>
-          <td>
-            <ButtonGroup aria-label="Basic example">
-              <Button variant="danger">Delete</Button>
-            </ButtonGroup>
-          </td>
-        </tr>
-        {/* Additional rows can be mapped here from postsData */}
         {data?.map((post, index) => (
           <tr key={post.id}>
             <td>{index + 1}</td>
