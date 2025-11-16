@@ -8,3 +8,14 @@ export interface PostItem {
 }
 
 export type TPostStatus = "publish" | "draft" | "block" | "all";
+
+export interface CommentPost {
+  post_id: number;
+  body: string;
+}
+
+export interface CommentResponse {
+  id: number;
+  post_id: number;
+  body: string;
+}
