@@ -1,10 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Table, ButtonGroup, Button, Form } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import useGetPosts from "../hooks/useGetPosts";
+import useGetPosts, { fetchPosts } from "../hooks/useGetPosts";
 import { TPostStatus } from "../types";
 import useSearch from "../hooks/useSearch";
-
+import { useQueryClient } from "@tanstack/react-query";
 interface PostListProps {
   selectedPostStatus: TPostStatus;
   searchQuery: string;
@@ -12,6 +12,8 @@ interface PostListProps {
 
 const PostList = ({ selectedPostStatus, searchQuery }: PostListProps) => {
   const [paginate, setPaginate] = useState(1);
+  const queryClient = useQueryClient();
+
   const { data, isError, error, isLoading, isStale, refetch } = useGetPosts(selectedPostStatus, paginate);
 
   const {
@@ -20,6 +22,16 @@ const PostList = ({ selectedPostStatus, searchQuery }: PostListProps) => {
     error: errorSearch,
     isLoading: isLoadingSearch,
   } = useSearch(searchQuery);
+
+  useEffect(() => {
+    const nextPage = paginate + 1;
+    if (nextPage > 3) return;
+    queryClient.prefetchQuery({
+      queryKey: ["posts", "search", { selectedPostStatus, paginate: nextPage }],
+      queryFn: () => fetchPosts(selectedPostStatus, nextPage),
+    });
+  }, [paginate, queryClient, selectedPostStatus]);
+
   const displayData = searchQuery.length > 0 ? searchData : data;
   if (isError || isErrorSearch) {
     if (isError) return <div>Error: {(error as Error).message}</div>;
@@ -51,7 +63,11 @@ const PostList = ({ selectedPostStatus, searchQuery }: PostListProps) => {
             <tr key={post.id}>
               <td>{index + 1}</td>
               <td>
-                <Link to={`/info`}>{post.title}</Link>
+                {searchQuery.length > 0 ? (
+                  <Link to={`/info?id=${post.id}&type=search&key=${searchQuery}`}>{post.title}</Link>
+                ) : (
+                  <Link to={`/info?id=${post.id}&type=paginate&key=${paginate}`}>{post.title}</Link>
+                )}
               </td>
               <td>{post.status}</td>
               <td style={{ textAlign: "center" }}>
