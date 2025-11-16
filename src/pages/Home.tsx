@@ -3,17 +3,21 @@ import PostList from "../components/PostList";
 import PostFilter from "../components/PostFilter";
 import { useState } from "react";
 import { TPostStatus } from "../types";
+import SearchQuery from "../components/SearchQuery";
 
 const Home = () => {
   const [selectedPostStatus, setSelectedPostStatus] = useState<TPostStatus>("all");
-
+  const [searchQuery, setSearchQuery] = useState("");
   return (
     <Row>
       <Col xs={9}>
-        <PostList selectedPostStatus={selectedPostStatus} />
+        <PostList selectedPostStatus={selectedPostStatus} searchQuery={searchQuery} />
       </Col>
       <Col>
-        <PostFilter setSelectedPostStatus={setSelectedPostStatus} selectedPostStatus={selectedPostStatus} />
+        <SearchQuery setSearchQuery={setSearchQuery} />
+        {searchQuery.length === 0 && (
+          <PostFilter setSelectedPostStatus={setSelectedPostStatus} selectedPostStatus={selectedPostStatus} />
+        )}
       </Col>
     </Row>
   );

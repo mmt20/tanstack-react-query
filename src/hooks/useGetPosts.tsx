@@ -9,11 +9,11 @@ const fetchPosts = async (selectedPostStatus: TPostStatus): Promise<PostItem[]> 
   return response.data;
 };
 const useGetPosts = (selectedPostStatus: TPostStatus): UseQueryResult<PostItem[]> => {
-  console.log("selectedPostStatus:", selectedPostStatus);
   const query = useQuery({
-    queryKey: ["posts", { selectedPostStatus }],
+    queryKey: ["posts", "search", { selectedPostStatus }],
     queryFn: () => fetchPosts(selectedPostStatus),
     staleTime: 5 * 60 * 1000, // 5 minutes
+    refetchInterval: 10 * 60 * 1000, // 10 minutes
   });
 
   return query;
